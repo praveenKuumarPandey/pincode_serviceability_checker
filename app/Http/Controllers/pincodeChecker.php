@@ -24,6 +24,11 @@ class pincodeChecker extends Controller
         return view('pincode_view');
     }
 
+    public function home()
+    {
+        return view('pincode_serviceability_home');
+    }
+
     public function soapClientTest()
     {
 

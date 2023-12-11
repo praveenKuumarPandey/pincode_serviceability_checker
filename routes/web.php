@@ -18,6 +18,7 @@ Route::get('/', [pincodeChecker::class, 'index']);
 
 
 Route::get('/pincode_code_checker', [pincodeChecker::class, 'index'])->name('pincode.view');
+Route::get('/pincode_serviceability_checker', [pincodeChecker::class, 'home'])->name('pincode.default_view');
 Route::get('/internalGetDeliveryTatNStatus', [pincodeChecker::class, 'internalGetTatNDeliveryStatus'])->name('pincode.statusInternal');
 Route::get('/getDeliveryTatNStatus', [pincodeChecker::class, 'getTatNDeliveryStatus'])->name('pincode.status');
 Route::get('/getDeliveryTatNStatusProxyV', [pincodeChecker::class, 'getTatNDeliveryStatus'])->middleware(['auth.proxy'])->name('pincode.statusProxyV');

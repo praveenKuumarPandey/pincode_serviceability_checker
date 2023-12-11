@@ -1,0 +1,40 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+
+$navBar: #1e2632;
+$background: #f7f8f9;
+$text: #3a3c42;
+
+body {
+    background-color: $background;
+    color: $text;
+}
+
+.navbar {
+    background-color: $navBar;
+    box-shadow: 0 5px 10px 0 rgba(204, 204, 204, 0.3);
+    a {
+        color: #fff;
+    }
+    a:active {
+        color: rgb(255, 227, 66);
+    }
+    a:link {
+        color: #fff;
+    }
+    a:visited {
+        color: #fff;
+    }
+    a:hover {
+        color: #fff;
+    }
+
+    margin-bottom: 40px;
+}

@@ -1,30 +1,3 @@
-<?php 
-
-$pincode_array= [
-
-"110092" => "Anand Vihar SO",
-"110051" => "Azad Nagar SO East Delhi",
-"110032" => "Babarpur SO North East Delhi",
-"110090" => "Badarpur Khadar BO",
-"110032" => "Balbir Nagar SO",
-"110053" => "Bhajan Pura SO",
-"110032" => "Bhola Nath Nagar SO",
-"110053" => "Brahampuri SO",
-"110091" => "Chilla BO",
-"110094" => "Dayalpur BO",
-"110095" => "Dilshad Garden SO",
-"110032" => "Distt Court KKD SO",
-"110031" => "Gandhi Nagar Bazar SO",
-"110031" => "Gandhi Nagar SO East Delhi",
-"110053" => "Garhi Mandu BO"
-
-];
-
-
-
-?>
-
-
 @extends('templates.main')
 
 @section('content')
@@ -32,32 +5,31 @@ $pincode_array= [
 <div class="heading">
     <h1> Pincode Checker</h1>
 </div>
+<div class="col">
 
+</div>
 <div>
 
-    <h2>Select Pincode</h2>
+    <h2>Enter Pincode</h2>
 
-
-    {{-- <select name="pincodeList" id="pincodeList">
-        <?php
-                    foreach($pincode_array as $pincode => $location){
-                        ?>
-        <option value="<?php echo $pincode ?>">
-            <?php echo $location; ?>
-        </option>
-        <?php
-                    }
-                ?>
-    </select> --}}
     <input type="text" name="pincode_text" id="pincode_text">
     <input type="button" name="pincode_checkBtn" id="pincode_checkBtn" value="Check">
+
+</div>
+
+{{-- <div class="ajax-loader">
+    <img src="{{url('/images/pinloader.gif')}}" alt="Image" />
+</div> --}}
+
+<div class="row justify-content-center">
+    <div id="loader_image_upload" style="display: none" class="spinner-border text-primary m-2 p-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
 </div>
 
 <div id="resultMessage">
     <div id="error"></div>
-    <div class="ajax-loader">
-        <img src="{{url('/images/loader.jpg')}}" alt="Image" />
-    </div>
+
 
 
     <div id="tat_html"></div>
@@ -122,7 +94,7 @@ return false;
             dataType: 'json',      //return data will be json
             beforeSend: function() {
         // setting a timeout
-        $('.ajax-loader').css("visibility", "visible");
+        $('#loader_image_upload').show();
             },
             success: function(data) {
                 // console.log("price");
@@ -219,7 +191,8 @@ return false;
                 }
                 },
                 complete: function(){
-    $('.ajax-loader').css("visibility", "hidden");
+    // $('.ajax-loader').css("visibility", "hidden");
+    $('#loader_image_upload').hide();
   },
                 error:function(){
                     $('#tat_html').html('<div>Invalid Pincode</div>');
@@ -229,6 +202,8 @@ return false;
 
                     $('#cod_html').html("");
                     $('#returnExchText').html("");
+                    $('#loader_image_upload').hide();
+
             }
              
         });

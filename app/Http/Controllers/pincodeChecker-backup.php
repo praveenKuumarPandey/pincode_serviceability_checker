@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Http\Controllers;
 
 // require 'vendor/autoload.php';
@@ -12,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\PseudoTypes\False_;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Config;
+
 use SoapClient;
 use SoapHeader;
 
@@ -25,6 +23,7 @@ class pincodeChecker extends Controller
     {
         return view('pincode_view');
     }
+
     public function home()
     {
         return view('pincode_serviceability_home');
@@ -35,33 +34,35 @@ class pincodeChecker extends Controller
         return view('upload_serviceability_data_view');
     }
 
-
     public function soapClientTest()
     {
 
-        // $url = "http://www.dneonline.com/calculator.asmx";
-        // $url = "https://www.dataaccess.com/webservicesserver/NumberConversion.wso";
-        // $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
-        // $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
+        $url = "http://www.dneonline.com/calculator.asmx";
+        $url = "https://www.dataaccess.com/webservicesserver/NumberConversion.wso";
+        $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
+        $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
 
-        // $soapclient = new SoapClient($url."?wsdl");
-        // $param=array('intA'=>500, 'intB'=>5);
-        // $param=array('intB'=>500);
-        // $param=array('sCountryISOCode'=>'IN');
-        // $response =$soapclient->Divide($param);
-        // $response =$soapclient->Subtract($param);
-        // $response =$soapclient->CapitalCity($param);
-        // var_dump($response);die;
-        // $result = json_decode(json_encode($response),true);
+        $soapclient = new SoapClient($url . "?wsdl");
+        $param = array('intA' => 500, 'intB' => 5);
+        $param = array('intB' => 500);
+        $param = array('sCountryISOCode' => 'IN');
+        $response = $soapclient->Divide($param);
+        $response = $soapclient->Subtract($param);
+        $response = $soapclient->CapitalCity($param);
+        var_dump($response);
+        die;
+        $result = json_decode(json_encode($response), true);
 
-        // print_r($result);die;
+        print_r($result);
+        die;
 
 
 
-        // $finderObj = SoapClient::to('https://api.example.com')->GetServicesforPincode();
+        $finderObj = SoapClient::to('https://api.example.com')->GetServicesforPincode();
 
-        // $finderObj = $soapClient->GetServicesforPincode();
-        // var_dump($finderObj);die;
+        $finderObj = $soapClient->GetServicesforPincode();
+        var_dump($finderObj);
+        die;
 
 
 
@@ -71,24 +72,13 @@ class pincodeChecker extends Controller
     {
         $servicesAvailableCheck = [];
         $servicesAvailableCheck['couriorService'] = 'BlueDart';
-        // $apitype = 's';
-        // $area = 'GGN';
-        // $customercode = '397526';
-        // $licencekey = 'c54903831b8feeffd010b3fdf2c8b098';
-        // $loginid = 'GG397526';
-        // $password = "";
-        $apitype = Config::get('app.bluedart_api_vars.apitype');
-        $area = Config::get('app.bluedart_api_vars.area');
-        $customercode = Config::get('app.bluedart_api_vars.customercode');
-        $licencekey = Config::get('app.bluedart_api_vars.licencekey');
-        $loginid = Config::get('app.bluedart_api_vars.loginid');
-        $password = Config::get('app.bluedart_api_vars.password');
-        // dd($apitype,
-        //     $area,
-        //     $customercode,
-        //     $licencekey,
-        //     $loginid,
-        //     $password);
+        $apitype = 's';
+        $area = 'GGN';
+        $customercode = '397526';
+        $licencekey = 'c54903831b8feeffd010b3fdf2c8b098';
+        $loginid = 'GG397526';
+        $password = "";
+
         $servicefinderurl = 'https://netconnect.bluedart.com/Ver1.8/ShippingAPI/Finder/ServiceFinderQuery.svc';
         if (!$servicefinderurl) {
             echo "Please enter Service Finder url from system configuration.";
@@ -200,7 +190,6 @@ class pincodeChecker extends Controller
                         $servicesAvailableCheck['cod'] = 1;
                         $servicesAvailableCheck['delivery'] = 1;
                         $servicesAvailableCheck['tat'] = $ExpdeliveryDate;
-                        $servicesAvailableCheck['originalTatInfo'] = $ExpdeliveryDate;
                         $servicesAvailableCheck['pincode'] = $pincode;
                         $servicesAvailableCheck['error'] = false;
                         $servicesAvailableCheck['errorMessage'] = '';
@@ -257,7 +246,7 @@ class pincodeChecker extends Controller
             $response = $client->request('GET', 'https://track.delhivery.com/c/api/pin-codes/json/?filter_codes=' . $filter_codes, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => 'Token ' . Config::get('app.delhivery_api_vars.apikey'),
+                    'Authorization' => 'Token 64c3514b553bf81c86c52f259b834de41a5f0dae',
                 ]
 
             ]);
@@ -268,10 +257,6 @@ class pincodeChecker extends Controller
 
             //returns an array.
             $resultDel = json_decode($response->getBody(), true);
-            //    var_dump($resultDel);die;
-            // dd($resultDel);
-
-
             if ($resultDel['delivery_codes']) {
                 //    var_dump($resultDel);die;
                 // print_r($resultDel);die;
@@ -305,13 +290,12 @@ class pincodeChecker extends Controller
                     // date_default_timezone_set("Asia/Calcutta");
                     $pincodell = $this->getExpectedDateOfDilivery($pincode);
                     if (!$pincodell) {
-                        throw new Exception('pincode does not available in TAT Table');
+                        throw new Exception('pincode doesent available in TAT Table');
                     }
                     // var_dump($pincodell);die;
                     $expectedDeliveryDate = $this->getMaxDate($pincodell['TAT']);
                     // var_dump($expectedDeliveryDate);die;
                     $servicesAvailableCheck['tat'] = $expectedDeliveryDate;
-                    $servicesAvailableCheck['originalTatInfo'] = $pincodell['TAT'];
                     $servicesAvailableCheck['pincode'] = $pincode;
                     $servicesAvailableCheck['error'] = false;
                     $servicesAvailableCheck['errorMessage'] = '';
@@ -375,92 +359,20 @@ class pincodeChecker extends Controller
     }
 
 
-    public function getExpectedDateofDelivery_Ecom_express($pincode)
-    {
-        $servicesAvailableCheck = [];
-        $servicesAvailableCheck['couriorService'] = 'EcomExpress';
-        $filter_codes = $pincode;
-
-
-
-        try {
-            $pincodelist = DB::select('select * from pincode_option_n_tat_ecom_express where pincode = ?', [$pincode]);
-            if ($pincodelist) {
-
-                foreach ($pincodelist as $pincodeRow) {
-
-                    $servicesAvailableCheck['tat'] = $this->getMaxDate($pincodeRow->tat);
-                    $servicesAvailableCheck['originalTatInfo'] = $pincodeRow->tat;
-                    $servicesAvailableCheck['pincode'] = $pincodeRow->pincode;
-                    $servicesAvailableCheck['cod'] = $pincodeRow->cod;
-                    $servicesAvailableCheck['delivery'] = $pincodeRow->delivery;
-                    $servicesAvailableCheck['error'] = false;
-                    $servicesAvailableCheck['errorMessage'] = '';
-                }
-
-                // var_dump($pincodelist);die;
-            } else {
-                $res_error = 'Invalid Pincode';
-                $servicesAvailableCheck['pincode'] = $pincode;
-                $servicesAvailableCheck['error'] = true;
-                $servicesAvailableCheck['errorMessage'] = $res_error;
-            }
-
-            return $servicesAvailableCheck;
-        } catch (Exception $e) {
-            // echo $e->getMessage();
-            // die;
-            $servicesAvailableCheck['pincode'] = $pincode;
-            $servicesAvailableCheck['error'] = true;
-            $servicesAvailableCheck['errorMessage'] = "Unexpected Error Please Try Again later";
-            return $servicesAvailableCheck;
-        }
-    }
-
-    public function getExpectedDateofDeliveryinString($pincode = null)
-    {
-        if (!$pincode) {
-            return null;
-        }
-        $pincode_delivery_response = $this->getTatNDeliveryStatus(new Request(['pincode' => $pincode]));
-        //return desired output date format
-        $pincode_delivery_response = json_decode($pincode_delivery_response);
-        if ($pincode_delivery_response->status == true) {
-            return $pincode_delivery_response->data->bufferedDeliveryDate;
-        } else {
-            return null;
-        }
-        // dd($pincode_delivery_response);
-    }
-
     public function getTatNDeliveryStatus(Request $request)
     {
         $pincode = $request->get('pincode');
-        // dd($pincode);
         if (!preg_match('/^[1-9][0-9]{5}$/', $pincode)) {
             // not valid
-            // Message::Case 0
             $invalidPincodeMsg = "Invalid Pincode, Pincode Must be of 6 digit";
-            $invalidPincode = '<i class="and-cancel" aria-hidden="true"></i>
-            <div class="error">
-                <small>Delivery</small>
-                <div>' . $invalidPincodeMsg . '</div>
-            </div>';
+            $invalidPincode = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">' . $invalidPincodeMsg . '</div>';
             $pincodeResult = ['html' => $invalidPincode];
-            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => -1, 'dispMessage' => $invalidPincodeMsg];
+            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
             return response()->json($arr);
         }
         // echo "heloo , ".$pincode;die;
-
-
-
-        $servicibilityDetails = $this->getExpectedDateofDelivery_Ecom_express($pincode);
-        if ($servicibilityDetails && ($servicibilityDetails['error'] == true || $servicibilityDetails['delivery'] == 2)) {
-            $servicibilityDetails = $this->getExpectedDateofDelivery_Delhivery($pincode);
-        }
-
+        $servicibilityDetails = $this->getExpectedDateofDelivery_Delhivery($pincode);
         $delhivery_servicibilityDetails = $servicibilityDetails;
-
         // var_dump($servicibilityDetails); die;
         // dd($delhivery_servicibilityDetails); die;
         if ($servicibilityDetails) {
@@ -475,46 +387,33 @@ class pincodeChecker extends Controller
         // dd($servicibilityDetails); die;
 
         if ($servicibilityDetails == NULL && $delhivery_servicibilityDetails == NULL) {
-            //Message::case 1
-            $isServicable = "Pincode Not Serviceable";
-            $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-            <div class="error">
-            <small>Delivery</small>
-            <div>' . $isServicable . '</div>
-            </div>';
+            $isServicable = "Your Pin Code is Not Serviceable";
+            $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">' . $isServicable . '</div>';
             $pincodeResult = ['html' => $deliveryDetail];
-            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $isServicable];
+            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
             return response()->json($arr);
         }
         if (($servicibilityDetails === NULL || $servicibilityDetails['error'] == true) && !isset($delhivery_servicibilityDetails['delivery'])) {
             //   echo "hi there";die;
             // kind of invalid pincode 
             //  not deliverable by blue dart and delivery both and not serviciable by any one 
-            //Message::case 1
-            $isServicable = "Pincode Not Serviceable";
-            $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-            <div class="error">
-            <small>Delivery</small>
-            <div>' . $isServicable . '</div>
-            </div>';
+            $isServicable = "Your Pin Code is Not Serviceable";
+            $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">' . $isServicable . '</div>';
             $pincodeResult = ['html' => $deliveryDetail];
-            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $isServicable];
+            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
             return response()->json($arr);
         }
 
         if (isset($delhivery_servicibilityDetails['delivery'])) {
             if ($delhivery_servicibilityDetails['delivery'] === 1) {
-                //Message::case 2,3,4
-                $isDeliveryAvailMsg = "Your Pincode is Serviceable";
+                $isDeliveryAvailMsg = "Your Pin Code is serviceable";
 
                 // descusess what message to show 
             } else {
-                //Message::case 1
-                $isDeliveryAvailMsg = "Pincode Not Serviceable";
+                $isDeliveryAvailMsg = "Your Pin Code is Not Serviceable for Now";
             }
         } else {
-            //Message::case 1
-            $isDeliveryAvailMsg = "Pincode Not Serviceable";
+            $isDeliveryAvailMsg = "Your Pin Code is Not Serviceable for Now";
         }
 
 
@@ -526,87 +425,79 @@ class pincodeChecker extends Controller
 
                 if ($servicibilityDetails['error'] === true && $delhivery_servicibilityDetails['delivery'] == 2) {
                     // not deliverable by blue dart and delivery both
-                    //Message::case 1
-                    $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-                    <div class="error">
-                        <small>Delivery</small>
-                        <div>' . $servicibilityDetails['errorMessage'] . '</div>
-                    </div>';
+                    $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">' . $servicibilityDetails['errorMessage'] . '</div>';
                     $pincodeResult = ['html' => $deliveryDetail];
-                    $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $servicibilityDetails['errorMessage']];
+                    $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
                     return response()->json($arr);
                 } else if ($servicibilityDetails['error'] === true && $delhivery_servicibilityDetails['delivery'] == 1) {
-                    //Message::case 2
+
                     // not deliverable by blue dart but deliverable by delhivery without pre order tat information
 
-                    $deliveryDetail = '<i class="and-check" aria-hidden="true"></i>
-            <div class="success">
+                    $deliveryDetail = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+                <i class="and-check" aria-hidden="true"></i>
+            </div>
+            <div class="col-2 pl__0 pr__0">
                 <small>Delivery</small>
                 <div class="">' . $isDeliveryAvailMsg . '</div>
             </div>';
 
 
-                    $pincodeResult = ['html' => $deliveryDetail, "Test Attributes" => ["dataFromCourierPartner" => [$servicibilityDetails, $delhivery_servicibilityDetails]]];
-                    $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 2, 'dispMessage' => $isDeliveryAvailMsg];
+                    $pincodeResult = ['html' => $deliveryDetail];
+                    $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
                     return response()->json($arr);
                 }
             } else if ($servicibilityDetails['error'] === true) {
-                //Message::case 1
                 // echo "hi there";die;
-                $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-                <div class="error"> 
-                    <small>Delivery</small>
-                        <div class="">' . $isDeliveryAvailMsg . '</div>
-                </div>';
-
+                $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">' . $isDeliveryAvailMsg . '</div>';
                 $pincodeResult = ['html' => $deliveryDetail];
-                $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $isDeliveryAvailMsg];
+                $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
                 return response()->json($arr);
             }
         } else {
             if (isset($delhivery_servicibilityDetails['delivery'])) {
 
                 if ($delhivery_servicibilityDetails['delivery'] === 1) {
-                    //Message::case 2
-                    $deliveryDetail = '<i class="and-check" aria-hidden="true"></i>
-            <div class="success">
-                <small>Delivery</small>
-                <div class="">' . $isDeliveryAvailMsg . '</div>
-            </div>';
-
-
-                    $pincodeResult = ['html' => $deliveryDetail, "Test Attributes" => ["dataFromCourierPartner" => [$servicibilityDetails, $delhivery_servicibilityDetails]]];
-                    $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult, 'messageCase' => 2, 'dispMessage' => $isDeliveryAvailMsg];
-                    return response()->json($arr);
-
-                    // descusess what message to show 
-                } else if ($delhivery_servicibilityDetails['delivery'] === 2) {
-                    //Message::case 1
-                    $deliveryDetail = '<i class="and-check" aria-hidden="true"></i>
-            <div class="error">
+                    $deliveryDetail = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+                <i class="and-check" aria-hidden="true"></i>
+            </div>
+            <div class="col-2 pl__0 pr__0">
                 <small>Delivery</small>
                 <div class="">' . $isDeliveryAvailMsg . '</div>
             </div>';
 
 
                     $pincodeResult = ['html' => $deliveryDetail];
-                    $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $isDeliveryAvailMsg];
+                    $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult];
+                    return response()->json($arr);
+
+                    // descusess what message to show 
+                } else if ($delhivery_servicibilityDetails['delivery'] === 2) {
+                    $deliveryDetail = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+                <i class="and-check" aria-hidden="true"></i>
+            </div>
+            <div class="col-2 pl__0 pr__0">
+                <small>Delivery</small>
+                <div class="">' . $isDeliveryAvailMsg . '</div>
+            </div>';
+
+
+                    $pincodeResult = ['html' => $deliveryDetail];
+                    $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult];
                     return response()->json($arr);
                 }
             } else {
                 // echo "hi there";die;
-                //Message::case 1
-                $deliveryDetail = '
+                $deliveryDetail = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
                 <i class="and-check" aria-hidden="true"></i>
-            
-            <div class="error">
+            </div>
+            <div class="col-2 pl__0 pr__0">
                 <small>Delivery</small>
                 <div class="">' . $isDeliveryAvailMsg . '</div>
             </div>';
 
 
                 $pincodeResult = ['html' => $deliveryDetail];
-                $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => $isDeliveryAvailMsg];
+                $arr = ['status' => false, 'message' => 'No Result Found, Tat Not Available', 'data' => $pincodeResult];
                 return response()->json($arr);
             }
         }
@@ -617,25 +508,18 @@ class pincodeChecker extends Controller
         // $pincodelist = DB::select('select * from pincode_option_n_tat where pincode = ?', [$pincode]);
         // echo "hello";die;
         // var_dump($pincodelist);die;
-        //Message::case 1
-        $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-        <div class="error">
-                <small>Delivery</small>
-                <div>Not Available</div>
-        </div>';
+        $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">Delivery not available</div>';
 
         $pincodeResult = [];
         if ($pincodelist == null) {
-            // echo "Pincode null";die;
-            //Message::case 1
+            // echo "pin code null";die;
             $pincodeResult = ['html' => $deliveryDetail];
-            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 1, 'dispMessage' => 'Pincode Not Serviceable'];
+            $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
             return response()->json($arr);
         }
 
         foreach ($pincodelist as $pincoderow) {
-            // var_dump($pincoderow);
-            // die;
+            // var_dump($pincoderow); die;
             // dd($pincoderow);
 
             /**
@@ -650,11 +534,9 @@ class pincodeChecker extends Controller
              * 
              */
 
-            // $current_date = date("Y/m/d", strtotime("2023/10/20")); // for testing purposes
             $current_date = date("Y/m/d");
             $tat = $pincoderow['tat'];
-            // var_dump($tat);
-            // die;
+            // var_dump($tat); die;
             // --------------if database wize tat need to be used then use this 2 line------------
             // $max_days = explode('-', $tat);
             // $max_days = end($max_days);
@@ -675,27 +557,21 @@ class pincodeChecker extends Controller
             } else {
                 // echo "its not a date - ". $tat;die;                
                 // json to be created with error message
-                //Message:Case 0
-                $deliveryDetail = '<i class="and-cancel" aria-hidden="true"></i>
-                <div class="error">
-                <small>Delivery</small>
-                <div>Unexpected Error Please try Again Later</div>
-                </div>';
+                $deliveryDetail = '<div class="clearfix"></div><div class="col-md-1 col-xs-1 col-sm-1 nopadding"><i class="and-cancel" aria-hidden="true"></i></div><div class="col-2 pl__0 pr__0">Unexpected Error Please try Again Later</div>';
                 $pincodeResult = ['html' => $deliveryDetail];
-                $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult, 'messageCase' => 0, 'dispMessage' => 'Unexpected Error Please try again Later'];
+                $arr = ['status' => false, 'message' => 'No Result Found', 'data' => $pincodeResult];
                 return response()->json($arr);
             }
 
 
 
-            $total_tat = (int) ($max_days + 4);
+            $total_tat = (int) ($max_days);
             // echo $total_tat; die;
             // echo $max_days; die;
             // var_dump($max_days);die;
             // date('d-m-Y',strtotime($startdate . ' +1 day'));
-            $max_days_final = (int) ($max_days + 4);
+            $max_days_final = (int) $max_days;
             // $max_days_final = (int) $max_days + 2; 
-            // $lastDate = date("Y/m/d", strtotime($current_date . " +" . $max_days_final . " day"));
             $lastDate = date("Y/m/d", strtotime($current_date . " +" . $max_days_final . " day"));
 
             // echo $lastDate;die;
@@ -707,95 +583,86 @@ class pincodeChecker extends Controller
                 // echo $total_tat."<br/>";
                 if ($this->isItAHoliday($date)) {
                     $total_tat = $total_tat + 1;
-                    //check if date is week end if yes no need to further increase tat.
                     if ($this->isItAWeekend($date)) {
                         continue;
                     }
-                } else if ($this->isSunday($date)) {
-                    //check if date is week end if yes no need to further increase tat.
-                    $total_tat = $total_tat + 1;
+                }
+
+                if ($this->isSaturday($date)) {
+                    $total_tat = $total_tat + 2;
                 }
                 // echo $total_tat."<br/>";
+
             }
             // echo $total_tat;die;
 
             $estimatedDeliveryDate = date("Y/m/d", strtotime($current_date . " +" . $total_tat . " day"));
-            // $estimatedDeliveryDatewithBuffer = date("Y/m/d", strtotime($current_date . " +" . $total_tat . " day"));
             // var_dump($estimatedDeliveryDate);die;
 
             $deliveryAvail = "";
             // ----------- start standard and Express delivery dates------------
 
             $dayDifference = ceil((strtotime($estimatedDeliveryDate) - strtotime($current_date)) / 86400);
-            $checkColor = '<i class="and-check" aria-hidden="true"></i>';
+            $checkColor = '<i class=" and-check" aria-hidden="true"></i>';
             // dd($pincoderow);
-            // if ($dayDifference <= 2) {
+            if ($dayDifference <= 2) {
 
-            //     if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
-            //         // echo "hi there 1"; die;
-            //         $incrementedDays = 1;
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 day");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
-            //         $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //     } else {
-            //         // Dilivery and Ecom Express 
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 day");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 1 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
-            //         $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //     }
-            // } elseif ($dayDifference == 3) {
-            //     if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
-            //         // echo "hi there 2"; die;
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 days");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 days");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 3 days");
-            //         $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //     } else {
-            //         // Dilivery and Ecom Express 
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 days");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 days");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 1 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 2 days");
-            //         $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //     }
-            // } elseif ($dayDifference > 3) {
-            //     // echo "hi there 3"; die;
-            //     if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 day");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $ExpressExpDelivery = "NA";
-            //         $checkColor = '<i class="and-cancel" aria-hidden="true"></i>';
-            //     } else {
-            //         // Dilivery and Ecom Express 
-            //         $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
-            //         $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 day");
-            //         $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            //         $ExpressExpDelivery = "NA";
-            //         $checkColor = '<i class="and-cancel" aria-hidden="true"></i>';
-            //     }
-            // }
+                if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
+                    // echo "hi there 1"; die;
+                    $incrementedDays = 1;
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 day");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
+                    $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                } else {
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 day");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 1 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
+                    $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                }
+            } elseif ($dayDifference == 3) {
+                if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
+                    // echo "hi there 2"; die;
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 days");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 days");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 3 days");
+                    $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                } else {
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 days");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 days");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 1 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 2 days");
+                    $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                }
+            } elseif ($dayDifference > 3) {
+                // echo "hi there 3"; die;
+                if (isset($pincoderow['couriorService']) && $pincoderow['couriorService'] == "BlueDart") {
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 3 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 5 day");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $ExpressExpDelivery = "NA";
+                    $checkColor = '<i class="and-cancel" aria-hidden="true"></i>';
+                } else {
+                    $startDelivery = strtotime($estimatedDeliveryDate . "+ 2 day");
+                    $endDelivery = strtotime($estimatedDeliveryDate . "+ 4 day");
+                    $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
+                    $ExpressExpDelivery = "NA";
+                    $checkColor = '<i class="and-cancel" aria-hidden="true"></i>';
+                }
+            }
 
-            $startDelivery = strtotime($estimatedDeliveryDate . "-2 day");
-            $endDelivery = strtotime($estimatedDeliveryDate . "+1 day");
-            $standardExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-            $startDelivery = strtotime($estimatedDeliveryDate . "- 3 day");
-            $endDelivery = strtotime($estimatedDeliveryDate . "+1 day");
-            $ExpressExpDelivery = date("j", $startDelivery) . ' - ' . date("j M", $endDelivery);
-
-            // ----------- end standard and Express delivery dates--------------\
-            //Message:: case 3,4
-            $deliveryAvail .= '<i class="and-check" aria-hidden="true"></i>										
-										<div class="success">
+            // ----------- end standard and Express delivery dates--------------
+            $deliveryAvail .= '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+											<i class="and-check" aria-hidden="true"></i>
+										</div>
+										<div class="col-2 pl__0 pr__0">
 											<small>Standard Shipping</small>
 											<div class="timelines">' . $standardExpDelivery . '</div>
 										</div>';
@@ -803,16 +670,18 @@ class pincodeChecker extends Controller
 
             // --------------Cod Available html element---------------
             if ($pincoderow['cod'] == 1) {
-                //Message:: case 4
-                $cod_html = '<i class="and-check" aria-hidden="true"></i>
-<div class="success">
+                $cod_html = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+<i class="and-check" aria-hidden="true"></i>
+</div>
+<div class="col-10 pl__0">
 <small>Cash on Delivery</small>
 <div class="timelines"> Available</div>
 </div>';
             } else {
-                //Message:: case 2,3
-                $cod_html = '<i class="and-cancel" aria-hidden="true"></i>
-    <div class="error">
+                $cod_html = '<div class="col-md-1 col-xs-1 col-sm-1 nopadding">
+    <i class="and-cancel" aria-hidden="true"></i>
+    </div>
+    <div class="col-10 pl__0">
     <small>Cash on Delivery</small>
     <div class="timelines">Not Available</div>
     </div>';
@@ -821,9 +690,9 @@ class pincodeChecker extends Controller
 
             // --------------Cod Available html element---------------
 
-            $pincodeResult[] = ['pincode' => $pincoderow['pincode'], 'cod' => $pincoderow['cod'], 'delivery' => $pincoderow['delivery'], 'tat' => $total_tat, 'estimatedDeliveryDate' => $estimatedDeliveryDate, 'standardExpDelivery' => $standardExpDelivery, 'expressExpDelivery' => $ExpressExpDelivery, 'html' => $deliveryAvail, 'cod_html' => $cod_html, 'returnExchText' => $returnExchangLine, 'bufferedDeliveryDate' => date("Y/m/d", strtotime($estimatedDeliveryDate)), "Test Attributes" => ["currentDate" => $current_date, "lastDate" => $lastDate, "total_tat" => $total_tat, "estimatedDeliveryDate" => $estimatedDeliveryDate, "dayDifference" => $dayDifference, "originalTat" => $tat, "max_day" => $max_days, "max_day_final" => $max_days_final, "period" => $period, "dataFromCourierPartner" => $pincoderow]];
+            $pincodeResult[] = ['pincode' => $pincoderow['pincode'], 'cod' => $pincoderow['cod'], 'delivery' => $pincoderow['delivery'], 'tat' => $total_tat, 'estimatedDeliveryDate' => $estimatedDeliveryDate, 'standardExpDelivery' => $standardExpDelivery, 'expressExpDelivery' => $ExpressExpDelivery, 'html' => $deliveryAvail, 'cod_html' => $cod_html, 'returnExchText' => $returnExchangLine];
         }
-        $arr = ['status' => true, 'message' => 'Result Found', 'data' => $pincodeResult, 'messageCase' => ($pincoderow['cod'] == 1) ? 4 : 3, 'dispMessage' => ($pincoderow['cod'] == 1) ? "Pincode Serviceable and COD Available" : "Pincode Serviceable but COD not Available"];
+        $arr = ['status' => true, 'message' => 'Result Found', 'data' => $pincodeResult];
         // print_r($arr); die;
         return response()->json($arr);
         // dd($users);
@@ -869,19 +738,18 @@ class pincodeChecker extends Controller
 
     public function isWeekend($date)
     {
-        return (date('N', strtotime($date)) > 6);
+        return (date('N', strtotime($date)) >= 6);
     }
 
-    public function isSunday($date)
+    public function isSaturday($date)
     {
 
         $datename_by_name = date('l', strtotime($date));
         $date_in_lower = strtolower($datename_by_name);
-        // echo ($date_in_lower == "sunday");
-
+        // echo ($date_in_lower == "saturday");
 
         // var_dump($date_in_lower == "saturday");
-        return ($date_in_lower == "sunday");
+        return ($date_in_lower == "saturday");
     }
     public function getDateDiff($date1, $date2)
     {
@@ -906,8 +774,8 @@ class pincodeChecker extends Controller
                 $servicesAvailableCheck['delivery'] = $pincodeRow->delivery;
                 $servicesAvailableCheck['TAT'] = $pincodeRow->tat;
             }
-            // var_dump($pincodelist);die;
             return $servicesAvailableCheck;
+            // var_dump($pincodelist);die;
         } else {
             return null;
         }
@@ -918,15 +786,15 @@ class pincodeChecker extends Controller
 
         // var_dump($tat);die;
 
-
-        // $current_date = date("Y/m/d", strtotime("2023/10/20")); // for testing purposes
         $current_date = date("Y/m/d");
         $max_days = explode('-', $tat);
         $max_days = end($max_days);
         $max_days_final = (int) $max_days;
         $lastDate = date("d-M-y", strtotime($current_date . " +" . $max_days_final . " day"));
-        // echo $lastDate;die;
         return $lastDate;
+        // echo $lastDate;die;
+
+
     }
 
     public function getAllDelhiveryPincode()
@@ -1000,5 +868,15 @@ class pincodeChecker extends Controller
         } catch (Exception $e) {
             echo "unable to call bluedart - <br/>error : " . $e->getMessage();
         }
+    }
+
+    public function internalGetTatNDeliveryStatus()
+    {
+        $myRequest = new Request();
+        $myRequest->setMethod('GET');
+        $myRequest->query->add(['pincode' => '110064']);
+        $response = $this->getTatNDeliveryStatus($myRequest);
+        dd($response);
+
     }
 }

@@ -156,16 +156,16 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        /*
-         * Package Service Providers...
-         */
+            /*
+             * Package Service Providers...
+             */
 
-        /*
-         * Application Service Providers...
-         */
+            /*
+             * Application Service Providers...
+             */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+            // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),
@@ -184,5 +184,29 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
+
+
+    /**
+     * pincode serviceability api variables
+     * for bluedart
+     * 
+     */
+
+    'bluedart_api_vars' => [
+        'apitype' => env('BLU_APITYPE'),
+        'area' => env('BLU_AREA'),
+        'customercode' => env('BLU_CUSTOMERCODE'),
+        'licencekey' => env('BLU_LICENCEKEY'),
+        'loginid' => env('BLU_LOGINID'),
+        'password' => env('BLU_PASSWORD'),
+        'servicefinderurl' => env('BLU_SERVICEFINDERURL'),
+    ],
+
+    /**
+     * for delhivery
+     */
+    'delhivery_api_vars' => [
+        'apikey' => env('DELH_APIKEY'),
+    ],
 
 ];

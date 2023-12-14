@@ -43,13 +43,10 @@
 @push('scripts')
 <script>
     var input = document.getElementById("pincode_text");
-
 input.addEventListener("keypress", function(event) {
-  // If the user presses the "Enter" key on the keyboard
-  if (event.key === "Enter") {
-    // Cancel the default action, if needed
-    event.preventDefault();
-    // Trigger the button element with a click
+  
+  if (event.key === "Enter") {    
+    event.preventDefault();    
     document.getElementById("pincode_checkBtn").click();
   }
 });
@@ -59,17 +56,14 @@ input.addEventListener("keypress", function(event) {
     $(document).on('click', '#pincode_checkBtn', function() {
         
         var pincode =  $("#pincode_text").val();
-        // var a = $(this).parent();
+        
         console.log("pincode is : ");
         console.log(pincode);
-        // return false;
-        // return false;
-        // console.log(a);
-        // console.log(pincode);
+        
         var pat1=/^\d{6}$/;
 
         if(!pat1.test(pincode)){
-// alert("Pin code should be 6 digits");
+
 $('#tat_html').html('<div>Invalid Pin code <br/> Pin code should be 6 digits</div>');
                 $('#tat_html').addClass("red-text");
                         $('#tat_html').removeClass("green-text");
@@ -79,7 +73,7 @@ $('#tat_html').html('<div>Invalid Pin code <br/> Pin code should be 6 digits</di
 $("#pincode_text").focus();
 return false;
 }else{
-    // $('#error').html(""); 
+    
 }
 
 
@@ -91,16 +85,16 @@ return false;
             type: 'get',
             url: 'getDeliveryTatNStatus',
             data: { 'pincode': pincode },
-            dataType: 'json',      //return data will be json
+            dataType: 'json',      
             beforeSend: function() {
-        // setting a timeout
+        
         $('#loader_image_upload').show();
             },
             success: function(data) {
-                // console.log("price");
+                
                 console.log(data);
-                // var data = JSON.parse(data);
-                // console.log(data.data[0].pincode);
+                
+                
 
                 if(data.status == true){
 
@@ -111,20 +105,7 @@ return false;
                     var htmlElement = data.data[0].html;
                     var codhtml = data.data[0].cod_html;
                     var returnExchText = data.data[0].returnExchText;
-// console.log(data.data[0].tat);
-// console.log(data.data[0].html);
-// console.log(typeof codhtml);
-// console.log(codhtml);
-// console.log(codhtml.indexOf("<p"));
-// console.log(codhtml.indexOf("</p>"));
-// console.log(codhtml.substring(codhtml.indexOf("<p"),codhtml.indexOf("</p>")));
 
-// console.log(codhtml.slice(codhtml.indexOf("<p>")));
-    // console.log(typeof codhtml);
-// console.log(codhtml.substring);
-                    // var deliveryAvailable = "";
-                    // var codAvailable = "";
-                    // var tatAvailable = "";
                     var resultMessage = "";
                     var cod_available = "";
                     if(data.data[0].delivery == 1){
@@ -141,10 +122,10 @@ return false;
                     }
 
                     var finalResultMessage = resultMessage +"\n"+ cod_available;
-                    // $('#messageforTat').text(finalResultMessage);
+                    
                     $('#tat_html').html(htmlElement);
-                    // console.log(htmlElement.indexOf("and-cancel"));
-                    // console.log(htmlElement.indexOf("and-check"));
+                    
+                    
                     if(htmlElement.indexOf("and-cancel") !== -1){
                         $('#tat_html').addClass("red-text");
                         $('#tat_html').removeClass("green-text");
@@ -154,8 +135,8 @@ return false;
                         $('#tat_html').removeClass("red-text");
                     }
                     $('#cod_html').html(codhtml);
-                    // console.log(codhtml);
-                    // console.log(codhtml.indexOf("and-check"));
+                    
+                    
                     if(codhtml.indexOf("and-cancel") !== -1){
                         $('#cod_html').addClass("red-text");
                         $('#cod_html').removeClass("green-text");
@@ -166,17 +147,17 @@ return false;
                         $('#cod_html').removeClass("red-text");
                     }
                     $('#returnExchText').html(returnExchText);
-                    // $("" + htmlElement).insertAfter( "#messageforTat" );
-                    // $("" + codhtml).insertAfter( "#messageforTat" );
+                    
+                    
 
 
-                    // a.find('.aircraft_id').val(data.aircraft_id); 
-                    // do you want to display id or registration name?
+                    
+                    
                 }else{
                     var htmlElement = data.data.html;
-//                   console.log(htmlElement);
+
                     $('#tat_html').html(htmlElement);
-                    // console.log(htmlElement.indexOf("and-cancel"));
+                    
                     if(htmlElement.indexOf("and-cancel") !== -1){
                         $('#tat_html').addClass("red-text");
                         $('#tat_html').removeClass("green-text");
@@ -185,13 +166,13 @@ return false;
                         $('#tat_html').addClass("green-text");
                         $('#tat_html').removeClass("red-text");
                     }
-                    // console.log(htmlElement.indexOf("and-check"));
+                    
                     $('#cod_html').html("");
                     $('#returnExchText').html("");
                 }
                 },
                 complete: function(){
-    // $('.ajax-loader').css("visibility", "hidden");
+    
     $('#loader_image_upload').hide();
   },
                 error:function(){

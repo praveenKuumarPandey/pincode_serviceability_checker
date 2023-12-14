@@ -18,15 +18,35 @@ Route::get('/', [pincodeChecker::class, 'home']);
 
 
 Route::get('/pincode_code_checker', [pincodeChecker::class, 'index'])->name('pincode.view');
+
+
 Route::get('/pincode_serviceability_checker', [pincodeChecker::class, 'home'])->name('pincode.default_view');
+
+
 Route::get('/upload_serviceability_data', [pincodeChecker::class, 'uploadServiceabilityDataView'])->name('pincode.uploadServiceabilityData');
-Route::get('/internalGetDeliveryTatNStatus', [pincodeChecker::class, 'internalGetTatNDeliveryStatus'])->name('pincode.statusInternal');
+Route::get('/pincodeServiceabilityUploadSampleDownload', [pincodeChecker::class, 'downloadPincodeServiceabilityDataUploadTemplate'])->name('pincode.serviceabilityUploadSampleDownload');
+Route::post('/uploadPincodeServiceabilityDetailsSheet', [pincodeChecker::class, 'uploadPincodeServiceabilityDetailsSheet'])->name('pincode.uploadPincodeServiceabilityDetailsSheet');
+
+
+
+//required
 Route::get('/getDeliveryTatNStatus', [pincodeChecker::class, 'getTatNDeliveryStatus'])->name('pincode.status');
+
+//remove - not used
 Route::get('/getDeliveryTatNStatusProxyV', [pincodeChecker::class, 'getTatNDeliveryStatus'])->middleware(['auth.proxy'])->name('pincode.statusProxyV');
-Route::get('/tatCheckByPincodeApi', [pincodeChecker::class, 'soapClientTest'])->name('pincode.getTat');
-// Route::get('/checkApiBoth/{pincode}', [pincodeChecker::class, 'getTatNDeliveryStatus'])->name('pincode.checkSoap');
-Route::get('/soapApiCheck/', [pincodeChecker::class, 'getTatNDeliveryStatus'])->name('pincode.checkSoap');
+
+
+
+
+
+//remove - not used in web 
 Route::get('/soapApiCheck/{pincode}', [pincodeChecker::class, 'getExpectedDateofDelivery_BlueDart'])->name('pincode.checkSoap1');
+
+//remove - not used in web
 Route::get('/delhiveryApiTest/{pincode}', [pincodeChecker::class, 'getExpectedDateofDelivery_Delhivery'])->name('pincode.checkDelhivery');
+
+//remove - not used
 Route::get('/soapApiCheckall', [pincodeChecker::class, 'getAllDelhiveryPincode'])->name('pincode.delhiveryAllPincode');
+
+//remove - not used
 Route::get('/getOrderTrackingApi', [pincodeChecker::class, 'getOrderTrackingDetails'])->name('pincode.getOrderTrackingApi');

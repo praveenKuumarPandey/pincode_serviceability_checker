@@ -17,7 +17,7 @@
             please use .xlxs, csv,files only
         </div>
         <div class="m-2">
-            <a class="link">Download Sample</a>
+            <a href="{{route('pincode.serviceabilityUploadSampleDownload')}}">Click Here to Download Sample</a>
         </div>
     </div>
     <div class="col-md-5">
@@ -74,7 +74,7 @@ form_data1.append("productAttributeUploadfile", productAttributeUploadFile.files
 // let file = new formdata();
 $.ajax({
 type:'POST',
-url: "{{ url('uploadProductAttributeSheet')}}",
+url: "{{ url('uploadPincodeServiceabilityDetailsSheet')}}",
 data: form_data1,
 catch:false,
 processData:false,
@@ -92,7 +92,7 @@ success: (data) => {
         let errorTracker = data[0].error.error_tracker;
         errorTracker.forEach(error_entry => {
             console.log('hi inside error_entry', error_entry);
-                if(error_entry.error === true || error_entry.error_metafield === true){
+                if(error_entry.error === true){
                     console.log('hi inside if error_entry.error row is true ', error_entry.row);
                     const newDiv = document.createElement("p");
                     newDiv.classList.add("alert", "alert-danger");

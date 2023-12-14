@@ -94,13 +94,15 @@
 
         .red-text {
             color: red;
-            background-color: yellow;
+            font-weight: bolder;
+            /* background-color: yellow; */
 
         }
 
         .green-text {
             color: green;
-            background-color: lightgray;
+            font-weight: bolder;
+            /* background-color: lightgray; */
 
         }
     </style>

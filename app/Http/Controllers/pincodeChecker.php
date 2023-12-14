@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\PseudoTypes\False_;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use SoapClient;
 use SoapHeader;
 
@@ -35,35 +36,129 @@ class pincodeChecker extends Controller
         return view('upload_serviceability_data_view');
     }
 
+    public function downloadPincodeServiceabilityDataUploadTemplate($filename = "pincodeServiceabilityUploadTemplate.xlsx")
+    {
+        $path = 'app/public/uploads/pincodeServiceabilityDetails';
+        $path = storage_path($path . "/" . $filename);
+        $reffid = Str::orderedUuid();
 
-    public function soapClientTest()
+        $fileName_parts = explode('.', $filename);
+        $extention = end($fileName_parts);
+        $fileName_new = $fileName_parts[0] . "-" . $reffid . "." . $extention;
+        // dd($fileName_new);
+
+        // Download file with custom headers
+        return response()->download($path, $fileName_new, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename="' . $fileName_new . '"'
+        ]);
+    }
+
+    public function uploadPincodeServiceabilityDetailsSheet(Request $req)
+    {
+        // dd($req);
+
+
+        // $this->validate($req, [
+        //         'productUploadfile' => 'required|file|mimes:xls,xlsx'
+        // ]);
+
+        // $validatedData = $req->validate([
+        //         'productUploadfile' => 'required',
+        //         'productUploadfile.*' => 'mimes:csv,xlx,xls,xlsx'
+        // ]);
+
+        $productUploadeFile = $req->file('productAttributeUploadfile');
+        $uploadFile = $req->input('uploadfile');
+
+        // print_r($productUploadeFile);
+        // print_r($uploadFile);die;
+        $spreadsheetController = new spreadsheetController();
+        $productAttributeArray = $spreadsheetController->exceltoArrayProductAttributes($productUploadeFile);
+
+        // dd($productAttributeArray);
+
+        return $this->updateServiceabilityDetails($productAttributeArray);
+        // $productController = new productsController();
+        // $result_returned = $productController->updateProductDetails($productAttributeArray);
+        // if($result_returned['error']['is_any_error'] == true){
+
+        // }
+        // dd($result_returned);
+        // return $result_returned;
+    }
+
+    function updateServiceabilityDetails($pincodeServiceabilityData)
     {
 
-        // $url = "http://www.dneonline.com/calculator.asmx";
-        // $url = "https://www.dataaccess.com/webservicesserver/NumberConversion.wso";
-        // $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
-        // $url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
+        $index = 0;
+        $errors_tracker = [];
+        $is_any_error = false;
 
-        // $soapclient = new SoapClient($url."?wsdl");
-        // $param=array('intA'=>500, 'intB'=>5);
-        // $param=array('intB'=>500);
-        // $param=array('sCountryISOCode'=>'IN');
-        // $response =$soapclient->Divide($param);
-        // $response =$soapclient->Subtract($param);
-        // $response =$soapclient->CapitalCity($param);
-        // var_dump($response);die;
-        // $result = json_decode(json_encode($response),true);
-
-        // print_r($result);die;
-
-
-
-        // $finderObj = SoapClient::to('https://api.example.com')->GetServicesforPincode();
-
-        // $finderObj = $soapClient->GetServicesforPincode();
-        // var_dump($finderObj);die;
+        // dd($pincodeServiceabilityData);
+        if (isset($pincodeServiceabilityData)) {
+            foreach ($pincodeServiceabilityData as $pincodeServiceabilityDetails) {
+                // dd($pincodeServiceabilityDetails);
+                if ($pincodeServiceabilityDetails['delivery_partner'] == 'delhivery') {
+                    //update delivery table
+                    // dd('delivery_table');
+                    $tableName = 'pincode_option_n_tat';
+                    try {
+                        $recordUpdated = DB::table($tableName)
+                            ->updateOrInsert(
+                                ['pincode' => $pincodeServiceabilityDetails['pincode']],
+                                ['cod' => $pincodeServiceabilityDetails['cod'], 'delivery' => $pincodeServiceabilityDetails['delivery'], 'tat' => $pincodeServiceabilityDetails['tat']]
+                            );
 
 
+                        $errors_tracker[$index]['row'] = $index;
+                        $errors_tracker[$index]['error'] = false;
+
+
+                        // dd($recordUpdated);
+                    } catch (Exception $exp) {
+
+                        // dd("unable to update at row ", $exp);
+                        $errors_tracker[$index]['row'] = $index;
+                        $errors_tracker[$index]['error'] = true;
+                        // $errors_tracker[$index]['error'] = true;
+                        $is_any_error = true;
+
+                    }
+
+
+                } else if ($pincodeServiceabilityDetails['delivery_partner'] == 'ecom express') {
+                    //update Ecom Express table
+                    $tableName = 'pincode_option_n_tat_ecom_express';
+                    // dd('Ecom_table');
+
+                    try {
+                        $recordUpdated = DB::table($tableName)
+                            ->updateOrInsert(
+                                ['pincode' => $pincodeServiceabilityDetails['pincode']],
+                                ['cod' => $pincodeServiceabilityDetails['cod'], 'delivery' => $pincodeServiceabilityDetails['delivery'], 'tat' => $pincodeServiceabilityDetails['tat']]
+                            );
+
+                        // dd($recordUpdated);
+                        $errors_tracker[$index]['row'] = $index;
+                        $errors_tracker[$index]['error'] = false;
+
+                    } catch (Exception $exp) {
+
+                        // dd("unable to update at row EE", $exp);
+                        $errors_tracker[$index]['row'] = $index;
+                        $errors_tracker[$index]['error'] = true;
+                        $is_any_error = true;
+
+                    }
+                }
+
+                $index++;
+            }
+            return array(['status' => true, 'error' => ['error_tracker' => $errors_tracker, 'is_any_error' => $is_any_error]]);
+        } else {
+            return array(['status' => false, 'error' => ['error_tracker' => $errors_tracker, 'is_any_error' => $is_any_error]]);
+        }
 
     }
 
@@ -340,41 +435,6 @@ class pincodeChecker extends Controller
     }
 
 
-    public function getOrderTrackingDetails()
-    {
-        $servicesAvailableCheck = [];
-        $servicesAvailableCheck['couriorService'] = 'Delhivery';
-
-        // echo "hello";
-
-
-
-        $client = new \GuzzleHttp\Client();
-
-        try {
-
-            // https://track.delhivery.com/api/v1/packages/json?waybill=18148810035766&token=64c3514b553bf81c86c52f259b834de41a5f0dae
-            $response = $client->request('GET', 'https://track.delhivery.com/api/v1/packages/json?waybill=18148810035766&token=64c3514b553bf81c86c52f259b834de41a5f0dae', [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    // 'Authorization' => 'Token 64c3514b553bf81c86c52f259b834de41a5f0dae',
-
-                ],
-
-
-            ]);
-
-            echo ($response->getBody());
-            die;
-            // $json = json_decode($str, true);
-
-
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-
-
     public function getExpectedDateofDelivery_Ecom_express($pincode)
     {
         $servicesAvailableCheck = [];
@@ -440,7 +500,7 @@ class pincodeChecker extends Controller
         if (!preg_match('/^[1-9][0-9]{5}$/', $pincode)) {
             // not valid
             // Message::Case 0
-            $invalidPincodeMsg = "Invalid Pincode, Pincode Must be of 6 digit";
+            $invalidPincodeMsg = "Invalid Pincode, Pincode Must be of 6 digit, Not starting with 0";
             $invalidPincode = '<i class="and-cancel" aria-hidden="true"></i>
             <div class="error">
                 <small>Delivery</small>
@@ -929,76 +989,4 @@ class pincodeChecker extends Controller
         return $lastDate;
     }
 
-    public function getAllDelhiveryPincode()
-    {
-
-        $dataArray11 = [];
-        // $filter_codes = '122001';
-        // $filter_codes = '122015';
-
-        // if ($filter_codes == null || $filter_codes == "") {
-        //     $res_error = 'Invalid Pincode';
-        //     $servicesAvailableCheck['pincode'] =  $pincode;
-        //     $servicesAvailableCheck['error'] =  true;
-        //     $servicesAvailableCheck['errorMessage'] =  $res_error;
-        //     return $servicesAvailableCheck;
-        // }
-
-
-        $client = new \GuzzleHttp\Client();
-
-        try {
-
-            $response = $client->request('GET', 'https://track.delhivery.com/c/api/pin-codes/json/', [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Token 64c3514b553bf81c86c52f259b834de41a5f0dae',
-                ]
-
-            ]);
-
-            // echo $response->getBody();die;
-            $resultDel = json_decode($response->getBody(), true);
-            // dd($resultDel); die;
-            // var_dump($resultDel);die;
-            // print_r($resultDel);die;
-            if ($resultDel['delivery_codes']) {
-                //    var_dump($resultDel);die;
-                // print_r($resultDel);die;
-                $diliveryCodes = $resultDel['delivery_codes'];
-                foreach ($diliveryCodes as $postalCodes) {
-                    // var_dump($postalCodes);die;
-                    // dd($postalCodes);die;
-                    $postalCode = $postalCodes['postal_code'];
-                    // $centers = $postalCode['center'];
-                    $centers = $postalCode['center'];
-                    $distirct = $postalCode['district'];
-                    $pin = $postalCode['pin'];
-
-
-                    $dataArray11[] = ['pincode' => $pin, 'city' => $distirct];
-                }
-
-
-                $spreadSheetController = new spreadsheetController();
-                $spreadSheetController->AllPincodeCityDeihivery($dataArray11);
-                // dd($dataArray11);
-                // print_r($dataArray11);die;
-                // dd($resultDel);
-                // $dataArray[] = array($pin, $distirct);
-                // print_r($servicesAvailableCheck);die;
-                // return $servicesAvailableCheck;
-
-
-            } else {
-                // $res_error = 'Invalid Pincode';
-                // $servicesAvailableCheck['pincode'] =  $pincode;
-                // $servicesAvailableCheck['error'] =  true;
-                // $servicesAvailableCheck['errorMessage'] =  $res_error;
-                // return $servicesAvailableCheck;
-            }
-        } catch (Exception $e) {
-            echo "unable to call bluedart - <br/>error : " . $e->getMessage();
-        }
-    }
 }
